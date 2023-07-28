@@ -32,10 +32,7 @@ let intervalTime = setInterval(showTime,100);
 // let intervalTime; 
 let time;
 let record = Infinity;
-if(!localStorage.getItem('record')){
-  spanRecord.innerHTML = 0;
-  localStorage.setItem('record'),Infinity;
-};
+
 let endTime;
 
 
@@ -115,13 +112,16 @@ function showTime(){
  
 };
 function showRecord(){
-  
+  localStorage.setItem('record',record)
   if( endTime < localStorage.getItem('record')){
     record = endTime
     localStorage.setItem('record',record)
   }
- 
-  spanRecord.innerHTML = localStorage.getItem('record'); 
+  
+ console.log(record)
+  if(localStorage.getItem('record')==Infinity){spanRecord.innerHTML='+'}
+  else{spanRecord.innerHTML = localStorage.getItem('record'); }
+  
   
 };
 function winLevel(){
