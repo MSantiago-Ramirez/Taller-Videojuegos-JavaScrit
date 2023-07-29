@@ -9,8 +9,10 @@ const spanTime = document.querySelector('#time')
 const spanRecord = document.querySelector('#record')
 
 window.addEventListener('load',setCanvaSize);
-window.addEventListener('resize',cero);
+window.addEventListener('resize',calaberaReposition);
 window.addEventListener('resize',setCanvaSize);
+
+function decimales(n){return Number(n.toFixed(0))}
 
 let canvaSize;
 let elementSize;
@@ -32,12 +34,14 @@ let intervalTime = setInterval(showTime,100);
 // let intervalTime; 
 let time;
 let endTime;
-
+let recorridoCalavera ={col:undefined,row:undefined};
+let repositionCalavera ={x:undefined,y:undefined};
 
 function setCanvaSize(){
   const fraccion = 0.8    
     if(window.innerWidth > window.innerHeight){
         canvaSize = window.innerHeight * fraccion
+        canvaSize = decimales(canvaSize)
         
         canvas.setAttribute('width', (canvaSize))
         canvas.setAttribute('height', (canvaSize))
@@ -50,6 +54,7 @@ function setCanvaSize(){
       }
 
        elementSize = canvaSize/10;
+       elementSize = decimales(elementSize)
 
       startGame();
 };
@@ -76,22 +81,40 @@ function startGame() {
     fila.forEach((columna,colI) => {
       emoji = emojis[columna];
       posX = elementSize * (colI + 1)
+      posX = decimales(posX);
       posY = elementSize * (rowI + 1)
+      posY =decimales(posY);
       juego.fillText(emoji,posX,posY)
 
       if (columna == 'O'){
         if(!playerPosition.x && !playerPosition.y){
           playerPosition.x = posX;
-          playerPosition.y = posY
+          playerPosition.y = posY;
           };
       } else if( columna == 'I'){
         giftPlayer.x = posX;
-        giftPlayer.y = posY
+        giftPlayer.y = posY;
       } else if(columna == 'X'){
         enemyBomb.push({x: posX, y:posY})
       }
+      if(playerPosition.x == posX && playerPosition.y==posY){
+        recorridoCalavera.col = colI; 
+        recorridoCalavera.row = rowI;
+        console.log(recorridoCalavera)
+        };
+      if(recorridoCalavera.col == colI && recorridoCalavera.row == rowI){
+        repositionCalavera.x = posX
+        repositionCalavera.y =posY
+        console.log(repositionCalavera)
+      }
+       
+      
+        
+        
     })
     });
+  if(repositionCalavera.x != playerPosition.x && repositionCalavera.y != playerPosition.y){calaberaReposition();}
+  console.log({playerPosition,canvaSize})
   showRecord()
   showTime();
   movePlayer();
@@ -117,10 +140,10 @@ function showRecord(){
   
 };
 function winLevel(){
-  let giftX= playerPosition.x.toFixed(2) == giftPlayer.x.toFixed(2);
-  let gifty= playerPosition.y.toFixed(2) == giftPlayer.y.toFixed(2);
+  let giftX= decimales(playerPosition.x) == decimales(giftPlayer.x);
+  let gifty= decimales(playerPosition.y) == decimales(giftPlayer.y);
   let giftConfirm = giftX && gifty;
-  console.log({playerPosition})
+  
   if(giftConfirm){
     level++;
     startGame();
@@ -141,8 +164,9 @@ function overgame(){ console.log('ter')
 };
 function choqueBomb(){
   bombConfirm = enemyBomb.find(objetos=> {
-    let bombX= playerPosition.x.toFixed(1) == objetos.x.toFixed(1);
-    let bomby= playerPosition.y.toFixed(1) == objetos.y.toFixed(1);
+    let bombX= decimales(playerPosition.x) == decimales(objetos.x);
+    let bomby= decimales(playerPosition.y) == decimales(objetos.y);
+    
     return bombX && bomby;
      
   })
@@ -160,7 +184,8 @@ function choqueBomb(){
 function movePlayer(){
   winLevel()
   choqueBomb()
-  juego.fillText(emojis['PLAYER'], playerPosition.x , playerPosition.y);
+  juego.fillText(emojis['PLAYER'], decimales(playerPosition.x) , decimales(playerPosition.y));
+  console.log(playerPosition)
 
 };
   
@@ -175,10 +200,14 @@ btnRight.addEventListener('click',moveRight);
 btnLeft.addEventListener('click',moveLeft);
 btnDown.addEventListener('click',moveDown);
 
-function cero(){
-  playerPosition.x = undefined;
-  playerPosition.y = undefined;
-}
+function calaberaReposition(){
+  playerPosition.x = repositionCalavera.x;
+  playerPosition.y = repositionCalavera.y;
+  // playerPosition.x = decimales(playerPosition.x)
+  // playerPosition.y = decimales(playerPosition.y)
+  
+  
+ }
 function detectClicKeyBoard(tecla){
 
   switch (tecla.key) {
@@ -199,24 +228,29 @@ function detectClicKeyBoard(tecla){
 }
 function moveUp(){
   console.log({playerPosition,canvaSize})
-  if (playerPosition.y  > 1.5*elementSize){  playerPosition.y -= elementSize;
-  
+  if (playerPosition.y  > 1.5*elementSize){ 
+    playerPosition.y -= elementSize;
+    playerPosition.y = decimales(playerPosition.y)
     startGame()}
 
 }
 function moveRight(){
   if (playerPosition.x <= canvaSize - elementSize)
   {playerPosition.x += elementSize;
+    playerPosition.x = decimales(playerPosition.x)
   startGame()}
 }
 function moveLeft(){
   if (playerPosition.x >1.5* elementSize )
   {playerPosition.x -= elementSize;
+    playerPosition.x = decimales(playerPosition.x)
   startGame()}
 }
 function moveDown(){
-  if ( playerPosition.y < canvaSize )
+  
+  if ( playerPosition.y <  canvaSize - 0.5*elementSize )
   {playerPosition.y += elementSize;
+  playerPosition.y = decimales(playerPosition.y)
   startGame()}
 }
 
