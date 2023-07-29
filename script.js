@@ -31,8 +31,6 @@ let initialTime = Date.now()
 let intervalTime = setInterval(showTime,100);
 // let intervalTime; 
 let time;
-let record = Infinity;
-
 let endTime;
 
 
@@ -94,7 +92,7 @@ function startGame() {
       }
     })
     });
-  if (showRecord()) spanRecord.innerHTML = localStorage.getItem('record'); 
+  showRecord()
   showTime();
   movePlayer();
     
@@ -112,16 +110,10 @@ function showTime(){
  
 };
 function showRecord(){
-  localStorage.setItem('record',record)
-  if( endTime < localStorage.getItem('record')){
-    record = endTime
-    localStorage.setItem('record',record)
-  }
-  
- console.log(record)
-  if(localStorage.getItem('record')==Infinity){spanRecord.innerHTML='+'}
-  else{spanRecord.innerHTML = localStorage.getItem('record'); }
-  
+  if(!localStorage.getItem('record')){
+  spanRecord.innerHTML = 'No tienes un record definido'
+ }
+  else {spanRecord.innerHTML = localStorage.getItem('record');}
   
 };
 function winLevel(){
@@ -139,6 +131,12 @@ function winLevel(){
 function overgame(){ console.log('ter')
   clearInterval(intervalTime)
   endTime = time
+  if(!localStorage.getItem('record')){
+    localStorage.setItem('record',endTime)
+  }
+  if( endTime <= localStorage.getItem('record')){
+    localStorage.setItem('record',endTime)
+  } 
   showRecord()
 };
 function choqueBomb(){
@@ -156,7 +154,7 @@ function choqueBomb(){
     if(live<=0){
       level = 0;
       live = 3;
-      intervalTime = Date.now()
+      initialTime = Date.now()
     };startGame()};
   }
 function movePlayer(){
